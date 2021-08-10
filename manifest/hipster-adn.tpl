@@ -21,7 +21,8 @@ kind: Deployment
 metadata:
   name: emailservice
   annotations:
-    ves.io/workload-flavor: medium
+    ves.io/workload-flavor: tiny
+    ves.io/sites: ves-io-system/wes-sea
 spec:
   selector:
     matchLabels:
@@ -40,6 +41,8 @@ spec:
         env:
         - name: PORT
           value: "8080"
+        - name: ENABLE_PROFILER
+          value: "0"
         readinessProbe:
           periodSeconds: 5
           exec:
@@ -48,9 +51,14 @@ spec:
           periodSeconds: 5
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:8080"]
-        env:
-        - name: ENABLE_PROFILER
-          value: "0"
+        resources:
+          limits:
+            memory: 50Mi
+            cpu: 100m
+          requests:
+            cpu: 50m
+            memory: 50Mi
+
 ---
 apiVersion: v1
 kind: Service
@@ -75,7 +83,8 @@ kind: Deployment
 metadata:
   name: paymentservice
   annotations:
-    ves.io/workload-flavor: medium
+    ves.io/workload-flavor: tiny
+    ves.io/sites: ves-io-system/wes-sea
 spec:
   selector:
     matchLabels:
@@ -100,6 +109,15 @@ spec:
         livenessProbe:
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:50051"]
+        resources:
+          limits:
+            memory: 50Mi
+            cpu: 100m
+          requests:
+            cpu: 50m
+            memory: 50Mi
+
+
 ---
 apiVersion: v1
 kind: Service
@@ -124,7 +142,8 @@ kind: Deployment
 metadata:
   name: productcatalogservice
   annotations:
-    ves.io/workload-flavor: medium
+    ves.io/workload-flavor: tiny
+    ves.io/sites: ves-io-system/wes-sea
 spec:
   selector:
     matchLabels:
@@ -149,6 +168,15 @@ spec:
         livenessProbe:
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:3550"]
+        resources:
+          limits:
+            memory: 50Mi
+            cpu: 100m
+          requests:
+            cpu: 50m
+            memory: 50Mi
+
+
 ---
 apiVersion: v1
 kind: Service
@@ -173,7 +201,8 @@ kind: Deployment
 metadata:
   name: cartservice
   annotations:
-    ves.io/workload-flavor: medium
+    ves.io/workload-flavor: tiny
+    ves.io/sites: ves-io-system/wes-sea
 spec:
   selector:
     matchLabels:
@@ -205,6 +234,15 @@ spec:
           periodSeconds: 10
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:7070", "-rpc-timeout=5s"]
+        resources:
+          limits:
+            memory: 50Mi
+            cpu: 100m
+          requests:
+            cpu: 50m
+            memory: 50Mi
+
+
 ---
 apiVersion: v1
 kind: Service
@@ -229,7 +267,8 @@ kind: Deployment
 metadata:
   name: currencyservice
   annotations:
-    ves.io/workload-flavor: medium
+    ves.io/workload-flavor: tiny
+    ves.io/sites: ves-io-system/wes-sea
 spec:
   selector:
     matchLabels:
@@ -255,6 +294,15 @@ spec:
         livenessProbe:
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:7000"]
+        resources:
+          limits:
+            memory: 50Mi
+            cpu: 100m
+          requests:
+            cpu: 50m
+            memory: 50Mi
+
+
 ---
 apiVersion: v1
 kind: Service
@@ -279,7 +327,8 @@ kind: Deployment
 metadata:
   name: shippingservice
   annotations:
-    ves.io/workload-flavor: medium
+    ves.io/workload-flavor: tiny
+    ves.io/sites: ves-io-system/wes-sea
 spec:
   selector:
     matchLabels:
@@ -304,6 +353,15 @@ spec:
         livenessProbe:
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:50051"]
+        resources:
+          limits:
+            memory: 50Mi
+            cpu: 100m
+          requests:
+            cpu: 50m
+            memory: 50Mi
+
+
 ---
 apiVersion: v1
 kind: Service
@@ -328,7 +386,8 @@ kind: Deployment
 metadata:
   name: recommendationservice
   annotations:
-    ves.io/workload-flavor: medium
+    ves.io/workload-flavor: tiny
+    ves.io/sites: ves-io-system/wes-sea
 spec:
   selector:
     matchLabels:
@@ -359,6 +418,14 @@ spec:
           value: "productcatalogservice:3550"
         - name: ENABLE_PROFILER
           value: "0"
+        resources:
+          limits:
+            memory: 50Mi
+            cpu: 100m
+          requests:
+            cpu: 50m
+            memory: 50Mi
+
 ---
 apiVersion: v1
 kind: Service
@@ -382,6 +449,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: checkoutservice
+  annotations:
+    ves.io/workload-flavor: tiny
+    ves.io/sites: ves-io-system/wes-sea
+
 spec:
   selector:
     matchLabels:
@@ -417,6 +488,15 @@ spec:
             value: "currencyservice:7000"
           - name: CART_SERVICE_ADDR
             value: "cartservice:7070"
+          resources:
+            limits:
+              memory: 50Mi
+              cpu: 100m
+            requests:
+              cpu: 50m
+              memory: 50Mi
+
+
 ---
 apiVersion: v1
 kind: Service
@@ -440,6 +520,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
+  annotations:
+    ves.io/workload-flavor: tiny
+    ves.io/sites: ves-io-system/wes-sea
 spec:
   selector:
     matchLabels:
@@ -471,6 +554,15 @@ spec:
             value: "checkoutservice:5050"
           - name: AD_SERVICE_ADDR
             value: "adservice:9555"
+          resources:
+            limits:
+              memory: 50Mi
+              cpu: 100m
+            requests:
+              cpu: 50m
+              memory: 50Mi
+
+
 ---
 apiVersion: v1
 kind: Service
@@ -493,6 +585,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis-cart
+  annotations:
+    ves.io/workload-flavor: tiny
+    ves.io/sites: ves-io-system/wes-sea
+
+
 spec:
   selector:
     matchLabels:
@@ -506,10 +603,6 @@ spec:
       containers:
       - name: master
         image: k8s.gcr.io/redis:e2e  # or just image: redis
-        resources:
-          requests:
-            cpu: 100m
-            memory: 200Mi
         ports:
         - containerPort: 6379
         volumeMounts:
@@ -517,14 +610,18 @@ spec:
           name: redis-data
         resources:
           limits:
-            memory: 256Mi
-            cpu: 125m
+            memory: 50Mi
+            cpu: 100m
           requests:
-            cpu: 70m
-            memory: 200Mi
+            cpu: 50m
+            memory: 50Mi
       volumes:
       - name: redis-data
         emptyDir: {}
+        #resources:
+        #  limits:
+        #    memory: 50Mi
+
 ---
 apiVersion: v1
 kind: Service
@@ -571,8 +668,8 @@ spec:
           value: "5"
         resources:
           requests:
-            cpu: 300m
-            memory: 256Mi
+            cpu: 50m
+            memory: 50Mi
           limits:
-            cpu: 500m
-            memory: 512Mi
+            cpu: 100m
+            memory: 50Mi
