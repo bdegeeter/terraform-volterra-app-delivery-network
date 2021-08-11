@@ -6,6 +6,10 @@ terraform {
       source  = "volterraedge/volterra"
       version = "0.8.1"
     }
+    time = {
+      source  = "hashicorp/time"
+      version = ">= 0.3.0"
+    }
     local = ">= 2.0"
     null  = ">= 3.0"
   }

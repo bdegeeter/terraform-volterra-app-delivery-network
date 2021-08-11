@@ -21,6 +21,7 @@ resource "volterra_origin_pool" "this" {
   port               = 80
   no_tls             = true
   endpoint_selection = "LOCAL_PREFERRED"
+  depends_on = [time_sleep.waiting]
 }
 
 resource "volterra_waf" "this" {
@@ -38,6 +39,7 @@ resource "volterra_waf" "this" {
       app_profile
     ]
   }
+  depends_on = [time_sleep.waiting]
 }
 
 resource "volterra_http_loadbalancer" "this" {
@@ -73,4 +75,5 @@ resource "volterra_http_loadbalancer" "this" {
       cookie_expiry   = js_challenge.value["cookie_expiry"]
     }
   }
+  depends_on = [time_sleep.waiting]
 }

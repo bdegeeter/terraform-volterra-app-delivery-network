@@ -8,6 +8,12 @@ resource "volterra_namespace" "this" {
   name  = var.volterra_namespace
 }
 
+resource "time_sleep" "waiting" {
+  depends_on = [volterra_namespace.this]
+
+  create_duration = "10s"
+}
+
 resource "volterra_virtual_k8s" "this" {
   name      = format("%s-vk8s", var.adn_name)
   namespace = local.namespace
@@ -26,6 +32,7 @@ resource "volterra_virtual_k8s" "this" {
     when    = destroy
     command = "sleep 20s"
   }
+  depends_on = [time_sleep.waiting]
 }
 
 resource "volterra_api_credential" "this" {
@@ -38,6 +45,7 @@ resource "volterra_api_credential" "this" {
       name
     ]
   }
+  depends_on = [volterra_virtual_k8s.this]
 }
 
 resource "local_file" "this_kubeconfig" {
