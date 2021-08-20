@@ -534,7 +534,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: madhukar32/hipster-frontend:latest
+          image: gcr.io/google-samples/microservices-demo/frontend:v0.1.2
           ports:
           - containerPort: 8080
           env:
