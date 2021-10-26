@@ -21,7 +21,7 @@ resource "volterra_origin_pool" "this" {
   port               = 80
   no_tls             = true
   endpoint_selection = "LOCAL_PREFERRED"
-  depends_on = [time_sleep.waiting]
+  depends_on         = [time_sleep.waiting]
 }
 
 resource "volterra_waf" "this" {

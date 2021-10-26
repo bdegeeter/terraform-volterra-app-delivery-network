@@ -29,29 +29,23 @@ resource "volterra_virtual_k8s" "this" {
   }
 
   provisioner "local-exec" {
+    command = "${path.module}/scripts/get-vk8s-kubeconfig.sh $NAME $VK8S_NAMESPACE $VK8S_NAME $VK8S_KUBECONFIG_FILE "
+    environment = {
+      VOLT_API_URL = var.volt_api_url
+      NAME = substr(volterra_virtual_k8s.this.id, 1, 30)
+      VK8S_NAMESPACE = local.namespace
+      VK8S_NAME = format("%s-vk8s", var.adn_name)
+      VK8S_KUBECONFIG_FILE = format("%s/_output/hipster_adn_vk8s_kubeconfig", path.root)
+    }
+  }
+
+  provisioner "local-exec" {
     when    = destroy
     command = "sleep 20s"
   }
   depends_on = [time_sleep.waiting]
 }
 
-resource "volterra_api_credential" "this" {
-  name                  = substr(volterra_virtual_k8s.this.id, 1, 30)
-  api_credential_type   = "KUBE_CONFIG"
-  virtual_k8s_namespace = local.namespace
-  virtual_k8s_name      = format("%s-vk8s", var.adn_name)
-  lifecycle {
-    ignore_changes = [
-      name
-    ]
-  }
-  depends_on = [volterra_virtual_k8s.this]
-}
-
-resource "local_file" "this_kubeconfig" {
-  content  = base64decode(volterra_api_credential.this.data)
-  filename = format("%s/_output/hipster_adn_vk8s_kubeconfig", path.root)
-}
 
 resource "local_file" "hipster_manifest" {
   content  = local.hipster_manifest_content
@@ -59,7 +53,7 @@ resource "local_file" "hipster_manifest" {
 }
 
 resource "null_resource" "apply_manifest" {
-  depends_on = [local_file.this_kubeconfig, local_file.hipster_manifest]
+  depends_on = [volterra_virtual_k8s.this, local_file.hipster_manifest]
   triggers = {
     manifest_sha1 = sha1(local.hipster_manifest_content)
   }

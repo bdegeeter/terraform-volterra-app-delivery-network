@@ -49,3 +49,9 @@ variable "disable_js_challenge" {
   description = "disable javascript challenge"
   default     = false
 }
+
+variable "volt_api_url" {
+  type        = string
+  description = "voltera api url"
+  default     = "https://console.ves.volterra.io/api"
+}
