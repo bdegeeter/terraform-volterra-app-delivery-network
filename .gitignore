@@ -26,3 +26,5 @@ demo.tfvars.json
 .history
 
 # End of https://www.gitignore.io/api/visualstudiocode
+examples/basic/.tfvars.json
+examples/basic/_output/
